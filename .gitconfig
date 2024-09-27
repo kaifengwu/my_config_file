@@ -1,0 +1,16 @@
+[user]
+	name = KaifengWU
+	email = 23307140053@m.fudan.edu.cn
+	email = core.editor
+[core]
+	editor = vim
+[color]
+	ui = true
+[alias]
+	cm = commit
+	co = checkout
+	lg = log --graph
+	last = log -1 HEAD
+	br = branch
+	cb = checkout -b
+	ss = status
