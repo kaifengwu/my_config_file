@@ -15,4 +15,5 @@
 	cb = checkout -b
         ss = status
         ct = cat-file -p
+    ft = fetch
     

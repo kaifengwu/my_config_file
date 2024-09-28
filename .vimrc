@@ -21,12 +21,15 @@ set list lcs=tab:\|\   		" Set to use a vertical bar "|" when displaying Tab cha
 inoremap ) )<ESC>i
 inoremap ] ]<ESC>i
 inoremap > ><ESC>i
-inoremap } <CR>}<ESC>O
+inoremap } <CR>}<ESC>
 map <C-s> :w<CR>
 map <C-q> :wq<CR>
+inoremap <C-s> <ESC>:w<CR>
+inoremap <C-q> <ESC>:wq<CR>
 inoremap <C-a> <C-p>
-nmap - 0
-nmap = $
+inoremap <C-a> <C-p>
+noremap 9 0
+noremap 0 $
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
         \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
@@ -70,6 +73,9 @@ function! CheckBackspace() abort
     let col = col('.') - 1
     return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
+
+"noremap <C-x> :call Annotate()<CR> "useless function temporary 
+
   " Insert <tab> when previous text is space, refresh completion if not.
 inoremap <silent><expr> <TAB>
     \ coc#pum#visible() ? coc#pum#next(1):
