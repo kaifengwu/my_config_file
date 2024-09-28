@@ -1,9 +1,6 @@
-
-
-
 syntax on               " Set syntax highlighting
 set number              " Set the line number
-set tabstop=4           " Set an indent to account for 4 spaces
+set softtabstop=4           " Set an indent to account for 4 spaces
 set autoindent          " Set up automatic indentation
 set mouse=a             " Set mouse is always available, set mouse= (empty) cancel
 "set cc=80               " Column 80 highlighted, set cc=0 cancellation
@@ -30,7 +27,8 @@ map <C-q> :wq<CR>
 inoremap <C-a> <C-p>
 nmap - 0
 nmap = $
-
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
+        \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Configure the NERDTree plugin mapping button
 " Automatically open NERDTree after opening the file
@@ -43,10 +41,9 @@ map <F3> :NERDTreeToggle<CR>
 " Key f: In the NERDTree window, jump the cursor to the currently open file.
 map f :NERDTreeFind<CR>
 " Key 1: Switch to the previous tab
-map 1 :tabp<CR>
+"map 1 :tabp<CR>
 " Key 2: Switch to the next tab
-map 2 :tabn<CR>
-
+"map 2 :tabn<CR>
 
 let mapleader = " "
 
@@ -69,19 +66,49 @@ nnoremap <leader>p :PasteCode<cr>
 nnoremap <leader>u :GoToFunImpl<cr>
 nnoremap <silent> <leader>a :Switch<cr>
 
-" plugin-config coc-snippets {{{
+function! CheckBackspace() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+  endfunction
+  " Insert <tab> when previous text is space, refresh completion if not.
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? coc#_select_confirm() :
-      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
+    \ coc#pum#visible() ? coc#pum#next(1):
+    \ CheckBackspace() ? "\<Tab>" :
+    \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
 
-let g:coc_snippet_next = '<tab>'
+"" plugin-config coc-snippets {{{
+"inoremap <silent><expr> <TAB>
+"      \ coc#pum#visible() ? coc#_select_confirm() :
+"      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+"      \ <SID>check_back_space() ? "\<TAB>" :
+"      \ coc#refresh()
+
+
+"function! s:check_back_space() abort
+"  let col = col('.') - 1
+"  return !col || getline('.')[col - 1]  =~# '\s'
+"endfunction
+
+
+"tab used as comfirm
+
+"inoremap <silent><expr> <TAB>                                                      
+"      \ coc#pum#visible() ? coc#_select_confirm() :                                    
+"      \ coc#expandableOrJumpable() ?                                                   
+"      \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :       
+"      \ CheckBackspace() ? "\<TAB>" :                                                  
+"      \ coc#refresh()                                                                  
+"                                                                                       
+"    function! CheckBackspace() abort                                                   
+"      let col = col('.') - 1                                                           
+"      return !col || getline('.')[col - 1]  =~# '\s'                                   
+"    endfunction                                                                        
+"                                                                                       
+"let g:coc_snippet_next = '<tab>'           
+
+
 " plugin-config coc-snippets }}}
 
 " plugin-config coc-definition
@@ -89,7 +116,6 @@ nmap <silent> <leader>d :call CocAction('jumpDeclaration')<CR>
 nmap <silent> <leader>i :call CocAction('jumpDefinition')<CR>
 
 " options {{{
-set softtabstop=2
 set smarttab
 set expandtab
 

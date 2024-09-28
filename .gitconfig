@@ -9,8 +9,9 @@
 [alias]
 	cm = commit
 	co = checkout
-	lg = log --graph
+	lg = log --all --graph --decorate
 	last = log -1 HEAD
 	br = branch
 	cb = checkout -b
-	ss = status
+    ss = status
+    
