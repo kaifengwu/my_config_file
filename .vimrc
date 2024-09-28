@@ -52,9 +52,9 @@ let mapleader = " "
 
 call plug#begin('~/.vim/plugged')
 Plug 'scrooloose/nerdtree'
-Plug 'neoclide/coc.nvim', {'for':[ 'c', 'cpp', 'json', 'cmake', 'vim'], 'branch': 'release'}
-Plug 'rhysd/vim-clang-format', {'for' : ['c', 'cpp']}
-Plug 'chxuan/cpp-mode', {'for' : ['cpp']}
+Plug 'neoclide/coc.nvim' ", {'for':[ 'c', 'cpp', 'json', 'cmake', 'vim',''], 'branch': 'release'}
+Plug 'rhysd/vim-clang-format' ", {'for' : ['c', 'cpp']}
+Plug 'chxuan/cpp-mode' ", {'for' : ['cpp']}
 call plug#end()
 
 " plugin-config vim-clang-format
@@ -69,7 +69,7 @@ nnoremap <silent> <leader>a :Switch<cr>
 function! CheckBackspace() abort
     let col = col('.') - 1
     return !col || getline('.')[col - 1]  =~ '\s'
-  endfunction
+endfunction
   " Insert <tab> when previous text is space, refresh completion if not.
 inoremap <silent><expr> <TAB>
     \ coc#pum#visible() ? coc#pum#next(1):
@@ -106,8 +106,7 @@ inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 "      return !col || getline('.')[col - 1]  =~# '\s'                                   
 "    endfunction                                                                        
 "                                                                                       
-"let g:coc_snippet_next = '<tab>'           
-
+let g:coc_snippet_next = '<tab>'           
 
 " plugin-config coc-snippets }}}
 

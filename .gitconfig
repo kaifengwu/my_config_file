@@ -13,5 +13,6 @@
 	last = log -1 HEAD
 	br = branch
 	cb = checkout -b
-    ss = status
+        ss = status
+        ct = cat-file -p
     
