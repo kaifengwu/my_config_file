@@ -14,3 +14,8 @@ else
     mkdir ~/.config
     ln -s (pwd)/fish ~/.config/fish
 end
+
+sudo apt-get update
+sudo apt-get install nodejs
+curl -fLo \~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+

@@ -16,7 +16,7 @@ set hlsearch            " Enable Search Highlight
 set laststatus=2        " Always display the status bar
 set list lcs=tab:\|\   		" Set to use a vertical bar "|" when displaying Tab characters
 " Set Automatically Complete Parentheses
-"inoremap ' ''<ESC>i
+inoremap ' ''<ESC>i
 "inoremap " ""<ESC>i
 inoremap ) )<ESC>i
 inoremap ] ]<ESC>i
@@ -60,7 +60,7 @@ Plug 'rhysd/vim-clang-format' ", {'for' : ['c', 'cpp']}
 Plug 'chxuan/cpp-mode' ", {'for' : ['cpp']}
 call plug#end()
 
-" plugin-config vim-clang-format
+ "plugin-config vim-clang-format
 let g:clang_format#auto_format=1
 
 " plugin-config cpp-mode
@@ -74,9 +74,10 @@ function! CheckBackspace() abort
     return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 
-"noremap <C-x> :call Annotate()<CR> "useless function temporary 
-
-  " Insert <tab> when previous text is space, refresh completion if not.
+"use <C-x> to set or unset annotate
+noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+"Insert <tab> when previous text is space, refresh completion if not.
 inoremap <silent><expr> <TAB>
     \ coc#pum#visible() ? coc#pum#next(1):
     \ CheckBackspace() ? "\<Tab>" :
@@ -84,7 +85,7 @@ inoremap <silent><expr> <TAB>
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 
-"" plugin-config coc-snippets {{{
+" plugin-config coc-snippets {{{
 "inoremap <silent><expr> <TAB>
 "      \ coc#pum#visible() ? coc#_select_confirm() :
 "      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
