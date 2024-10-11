@@ -15,26 +15,71 @@ set bg=dark             " Show different background tones
 set hlsearch            " Enable Search Highlight
 set laststatus=2        " Always display the status bar
 set list lcs=tab:\|\   		" Set to use a vertical bar "|" when displaying Tab characters
-" Set Automatically Complete Parentheses
-inoremap ' ''<ESC>i
-"inoremap " ""<ESC>i
+set relativenumber
+filetype plugin indent on
+autocmd BufWritePost $MYVIMRC source $MYVIMRC
+
+"signle character can't trigger function
+
+
+inoremap } <ESC>:call Quotation4()<cr><ESC>
+
+inoremap ' '<ESC>:call Quotation3()<cr><ESC>
+"inoremap <silent>' '<ESC>:call Quotation3()<cr><ESC> 
+
+inoremap > <ESC>:call Quotation2()<cr><ESC>
+
+inoremap " <ESC>:call Quotation1()<cr><ESC>
+"Set Automatically Complete Parentheses
 inoremap ) )<ESC>i
 inoremap ] ]<ESC>i
-inoremap > ><ESC>i
-inoremap } <CR>}<ESC>
 map <C-s> :w<CR>
 map <C-q> :wq<CR>
 inoremap <C-s> <ESC>:w<CR>
 inoremap <C-q> <ESC>:wq<CR>
-inoremap <C-a> <C-p>
-inoremap <C-a> <C-p>
+inoremap <C-l> <ESC>%%a
+noremap <C-l> <ESC>%%a
 noremap 9 0
 noremap 0 $
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
-        \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+set winaltkeys=no”
+"Use alt to use some function when input
+execute "set <M-h>=\eh"
+inoremap <M-h> <Left> 
 
+execute "set <M-j>=\ej"
+inoremap <M-j> <Down> 
+
+execute "set <M-k>=\ek"
+inoremap <M-k> <Up> 
+
+execute "set <M-l>=\el"
+inoremap <M-l> <Right> 
+
+execute "set <M-o>=\eo"
+inoremap <M-o> <ESC>o
+
+execute "set <M-p>=\ep"
+inoremap <M-p> <ESC>pa
+
+execute "set <M-w>=\ew"
+inoremap <M-w> <ESC>ebdei
+nnoremap <M-w> <ESC>ebde
+
+imap <A-h> <Left>
+imap <A-j> <Down>
+imap <A-k> <Up>
+imap <A-l> <Right>
+imap <A-w> <ESC>ebdei
+nmap <A-w> <ESC>ebde
+noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+inoremap <C-j> <ESC>^$:call Newline()<cr><ESC>
+noremap <C-j> <ESC>^$:call Newline()<cr><ESC>
+
+"Insert <tab> when previous text is space, refresh completion if not.
 " Configure the NERDTree plugin mapping button
 " Automatically open NERDTree after opening the file
+"use <C-W> + ←→ change window
 autocmd VimEnter * NERDTree | wincmd p 
 autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 " Key F2: Map other tabs
@@ -51,11 +96,9 @@ map f :NERDTreeFind<CR>
 let mapleader = " "
 
 
-
-
 call plug#begin('~/.vim/plugged')
 Plug 'scrooloose/nerdtree'
-Plug 'neoclide/coc.nvim' ", {'for':[ 'c', 'cpp', 'json', 'cmake', 'vim',''], 'branch': 'release'}
+Plug 'neoclide/coc.nvim'  ", {'for':[ 'c', 'cpp', 'json', 'cmake', 'vim',''], 'branch': 'release'}
 Plug 'rhysd/vim-clang-format' ", {'for' : ['c', 'cpp']}
 Plug 'chxuan/cpp-mode' ", {'for' : ['cpp']}
 call plug#end()
@@ -70,61 +113,25 @@ nnoremap <leader>u :GoToFunImpl<cr>
 nnoremap <silent> <leader>a :Switch<cr>
 
 function! CheckBackspace() abort
-    let col = col('.') - 1
+    let col = col('.')- 1
     return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 
-"use <C-x> to set or unset annotate
-noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
-inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
-"Insert <tab> when previous text is space, refresh completion if not.
 inoremap <silent><expr> <TAB>
     \ coc#pum#visible() ? coc#pum#next(1):
     \ CheckBackspace() ? "\<Tab>" :
     \ coc#refresh()
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
+        \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 
-" plugin-config coc-snippets {{{
-"inoremap <silent><expr> <TAB>
-"      \ coc#pum#visible() ? coc#_select_confirm() :
-"      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-"      \ <SID>check_back_space() ? "\<TAB>" :
-"      \ coc#refresh()
-
-
-"function! s:check_back_space() abort
-"  let col = col('.') - 1
-"  return !col || getline('.')[col - 1]  =~# '\s'
-"endfunction
-
-
-"tab used as comfirm
-
-"inoremap <silent><expr> <TAB>                                                      
-"      \ coc#pum#visible() ? coc#_select_confirm() :                                    
-"      \ coc#expandableOrJumpable() ?                                                   
-"      \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :       
-"      \ CheckBackspace() ? "\<TAB>" :                                                  
-"      \ coc#refresh()                                                                  
-"                                                                                       
-"    function! CheckBackspace() abort                                                   
-"      let col = col('.') - 1                                                           
-"      return !col || getline('.')[col - 1]  =~# '\s'                                   
-"    endfunction                                                                        
-"                                                                                       
-let g:coc_snippet_next = '<tab>'           
-
-" plugin-config coc-snippets }}}
-
-" plugin-config coc-definition
 nmap <silent> <leader>d :call CocAction('jumpDeclaration')<CR>
 nmap <silent> <leader>i :call CocAction('jumpDefinition')<CR>
 
 " options {{{
 set smarttab
 set expandtab
-
 set nohlsearch
 set incsearch
 set hidden
