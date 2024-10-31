@@ -17,9 +17,10 @@ set laststatus=2        " Always display the status bar
 set list lcs=tab:\|\   		" Set to use a vertical bar "|" when displaying Tab characters
 set relativenumber
 filetype plugin indent on
-autocmd BufWritePost $MYVIMRC source $MYVIMRC
 
+autocmd BufWritePost $MYVIMRC source $MYVIMRC
 "signle character can't trigger function
+
 
 
 inoremap } <ESC>:call Quotation4()<cr><ESC>
@@ -35,12 +36,11 @@ inoremap ) )<ESC>i
 inoremap ] ]<ESC>i
 map <C-s> :w<CR>
 map <C-q> :wq<CR>
-inoremap <C-s> <ESC>:w<CR>
+inoremap <C-s> <ESC>:w<CR>l
 inoremap <C-q> <ESC>:wq<CR>
 inoremap <C-l> <ESC>%%a
 noremap <C-l> <ESC>%%a
-noremap 9 0
-noremap 0 $
+noremap - $
 set winaltkeys=no”
 "Use alt to use some function when input
 execute "set <M-h>=\eh"
@@ -75,7 +75,9 @@ noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
 inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
 inoremap <C-j> <ESC>^$:call Newline()<cr><ESC>
 noremap <C-j> <ESC>^$:call Newline()<cr><ESC>
-
+if exists('&guicursor')
+    set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr-o:hor20
+endif
 "Insert <tab> when previous text is space, refresh completion if not.
 " Configure the NERDTree plugin mapping button
 " Automatically open NERDTree after opening the file
@@ -155,7 +157,7 @@ set colorcolumn=110
 set title
 set showmatch
 set noshowmode
-set mouse=v
+set mouse=a
 set modifiable
 set splitright
 set splitbelow
