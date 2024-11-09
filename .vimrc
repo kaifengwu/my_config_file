@@ -12,10 +12,10 @@ set sts=4               " Set the number of spaces inserted when the Tab key is 
 set ruler               " Show the status of the last line
 set showmode            " The status of this row is displayed in the lower left corner.
 set bg=dark             " Show different background tones
-set hlsearch            " Enable Search Highlight
 set laststatus=2        " Always display the status bar
 set list lcs=tab:\|\   		" Set to use a vertical bar "|" when displaying Tab characters
 set relativenumber
+let g:filename = expand('%')
 filetype plugin indent on
 
 autocmd BufWritePost $MYVIMRC source $MYVIMRC
@@ -34,10 +34,12 @@ inoremap " <ESC>:call Quotation1()<cr><ESC>
 "Set Automatically Complete Parentheses
 inoremap ) )<ESC>i
 inoremap ] ]<ESC>i
-map <C-s> :w<CR>
-map <C-q> :wq<CR>
-inoremap <C-s> <ESC>:w<CR>l
-inoremap <C-q> <ESC>:wq<CR>
+map <C-s> :cexpr[]<CR>:cclose<CR>:w<CR>
+map <C-q> <ESC>:cclose<CR>:cexpr[]<CR>:wq<CR>
+map <C-c> <ESC>:call Window()<CR>
+inoremap <C-c> <ESC>:call Window()<CR>
+inoremap <C-s> <ESC>:cexpr[]<CR>:cclose<CR>:w<CR>l
+inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
 inoremap <C-l> <ESC>%%a
 noremap <C-l> <ESC>%%a
 noremap - $
@@ -82,7 +84,8 @@ endif
 " Configure the NERDTree plugin mapping button
 " Automatically open NERDTree after opening the file
 "use <C-W> + ←→ change window
-autocmd VimEnter * NERDTree | wincmd p 
+
+"autocmd VimEnter * NERDTree | wincmd p 
 autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 " Key F2: Map other tabs
 map <F2> :NERDTreeMirror<CR>
@@ -95,15 +98,39 @@ map f :NERDTreeFind<CR>
 " Key 2: Switch to the next tab
 "map 2 :tabn<CR>
 
-let mapleader = " "
+let mapleader =" "
 
 
 call plug#begin('~/.vim/plugged')
 Plug 'scrooloose/nerdtree'
-Plug 'neoclide/coc.nvim'  ", {'for':[ 'c', 'cpp', 'json', 'cmake', 'vim',''], 'branch': 'release'}
+Plug 'neoclide/coc.nvim', { 'branch': 'release'}
 Plug 'rhysd/vim-clang-format' ", {'for' : ['c', 'cpp']}
 Plug 'chxuan/cpp-mode' ", {'for' : ['cpp']}
+Plug 'nvim-lua/popup.nvim'
 call plug#end()
+
+"----------------------Verilog 相关的配套设置-----------------------------
+autocmd FileType verilog setlocal shiftwidth=4 softtabstop=4
+"在保存 .v 文件时运行 verilator 并加载错误到 Quickfix 窗口
+autocmd BufWritePost *.v :silent! execute '!verilator -cc --exe -Wno-lint -Wall % 2>&1
+            \| sed -E "s/^(\%Warning-.*:|\%Error:|.*) (.+).v:/ \2.v:/g" 
+            \| grep -E "^.+\.v(:[0-9]+)+:"
+            \| sort -n
+            \| tee /tmp/verilator_output.txt' 
+            \| redraw!
+autocmd VimEnter *.v :silent! execute '!verilator -cc --exe -Wno-lint -Wall % 2>&1
+            \| sed -E "s/^(\%Warning-.*:|\%Error:|.*) (.+).v:/ \2.v:/g" 
+            \| grep -E "^.+\.v(:[0-9]+)+:"
+            \| sort -n
+            \| tee /tmp/verilator_output.txt' 
+            \| redraw!
+autocmd VimEnter *.v call LoadErrorMessage()
+set autowrite
+sign define error text=✖ texthl=ErrorMsg
+autocmd CursorHold *.v call ShowErrorPopup()
+autocmd BufWritePost *.v call LoadErrorMessage()
+"----------------------------------------------------------------------------
+
 
  "plugin-config vim-clang-format
 let g:clang_format#auto_format=1
@@ -131,6 +158,15 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
 nmap <silent> <leader>d :call CocAction('jumpDeclaration')<CR>
 nmap <silent> <leader>i :call CocAction('jumpDefinition')<CR>
 
+function! SetupCommandAbbrs(from, to)
+  exec 'cnoreabbrev <expr> '.a:from
+        \ .' ((getcmdtype() ==# ":" && getcmdline() ==# "'.a:from.'")'
+        \ .'? ("'.a:to.'") : ("'.a:from.'"))'
+endfunction
+
+"Use C to open coc config
+call SetupCommandAbbrs('C', 'CocConfig')
+
 " options {{{
 set smarttab
 set expandtab
@@ -140,7 +176,7 @@ set hidden
 set nobackup
 set nowritebackup
 set updatetime=300
-set shortmess+=c
+set shortmess+=atI
 set signcolumn=yes
 set nonumber
 set ttyfast
@@ -152,7 +188,6 @@ set noerrorbells
 set autowrite
 set ignorecase
 set ruler
-set cursorline
 set colorcolumn=110
 set title
 set showmatch
@@ -161,7 +196,6 @@ set mouse=a
 set modifiable
 set splitright
 set splitbelow
-set shortmess=atI
 set backspace=indent,eol,start
 set wildmenu
 set encoding=utf-8 nobomb
@@ -191,4 +225,3 @@ if has('persistent_undo')      "check if your vim version supports it
   set undofile                 "turn on the feature
   set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
 endif
-

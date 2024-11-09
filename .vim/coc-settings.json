@@ -1,0 +1,88 @@
+{
+"rust-analyzer":{
+    "server": {
+        "path": "/usr/bin/rust-analyzer"
+    }
+},
+"languageserver":{
+  "clangd": {
+    "command": "clangd",
+    "rootPatterns": ["compile_flags.txt", "compile_commands.json",".git"],
+    "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
+      "args":[
+        "--compile-commands-dir=build",
+        "--compile_args_from=filesystem",
+        "--all-scopes-completion",
+        "--background-index",
+        "--clang-tidy",
+        "--cross-file-rename",
+        "--completion-parse=always",
+        "--completion-style=detailed",
+        "--function-arg-placeholders",
+        "--header-insertion-decorators",
+        "--query-driver=/usr/bin/**/clang-*,/home/adem/GCC-10/bin/g++*",
+        "--header-insertion=never",
+        "--limit-results=0",
+        "-j=6",
+        "--pch-storage=memory"
+      ]
+    },
+
+   "verible": {
+            "command": "/usr/bin/verible-verilog-ls",
+            "filetypes": ["verilog","v"],
+            "rootPatterns": [".v",".sv"],
+            "args": [],
+            "trace.server": "verbose",
+            "settings": {
+                "verilog.enableCompletion": true,
+                "verilog.enableDiagnostics":true
+            }
+    //"svlangserver":{
+        //"command": "/usr/bin/svlangserver",
+        //"args": [],
+        //"filetypes": ["v","systemverilog","verilog"],
+        //"rootPatterns": [".v",".sv"],
+        //"trace.server": "verbose",
+        //"settings": {}
+    //}
+    },
+
+    "diagnostic-languageserver.server":{
+        "verible" :{
+            "command":"/usr/bin/verible-verilog-syntax",
+            "args":["--check",
+                "--verbosity","2"
+            ],
+            "format": "json",
+            "filetypes":["verilog","v"],
+            "isStdout": true,
+            "parseJson": true
+        }
+    },
+    "coc.preferences.enableMessage": false,
+    "coc.preferences.formatOnSaveFiletypes" : ["verilog","sv","v"],
+    "coc.source.verilog.veriblePath": "/usr/bin/verible-verilog-ls",
+
+    // 设置 Coc.nvim 插件的诊断功能
+    "coc.preferences.diagnostic.virtualText": true,  // 显示虚拟文本诊断信息（通常在代码行号附近）
+    "coc.preferences.diagnostic.level": "Warning",  // 设置诊断的最低严重级别，可以是 Error, Warning, Information, Hint
+    "coc.preferences.diagnostic.displayByAle": true,  // 允许显示来自 Ale（另一个诊断工具）的诊断信息
+
+    // 设置 Coc.nvim 插件的自动完成
+    "coc.preferences.autoCompleteDelay": 100,  // 自动完成延迟，单位是毫秒
+    "coc.preferences.snippetSupport": true,  // 启用代码片段支持（比如 Verilog 的常见模块模板）
+
+    "coc.preferences.floatWindow": true,  // 启用浮动窗口
+    "coc.preferences.floatWindow.border": "rounded",  // 设置浮动窗口的边框类型，选项有 none, single, double, rounded
+    "coc.preferences.floatWindow.maxHeight": 10,  // 浮动窗口的最大高度
+
+    // 设置 Coc.nvim 插件的补全行为
+    "coc.source.buffer.enable": true,  // 启用 buffer（当前文件）来源的补全
+    "coc.source.file.enable": true,  // 启用文件系统（文件名补全）
+    "coc.source.git.enable": true,  // 启用 git 提供的补全（如分支、提交信息）
+}
+}
+ 
+
+

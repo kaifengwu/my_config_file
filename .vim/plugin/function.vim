@@ -1,6 +1,6 @@
 function! Annotate() 
     let  l = expand('%:e')
-    if l =='c' || l == 'h'
+    if l =='c' || l == 'h' || l == 'json'
         if getline('.')[col('.')-1] == '/' || getline('.')[col('.')] == '/'
             call feedkeys("xx",'n')
         else 
@@ -67,4 +67,14 @@ function! Quotation4()
     endif
 endfunction
 
-
+function! Window()
+    echo &filetype
+    if &filetype == 'qf'
+        cclose
+    else
+        echo "open"
+        execute 'cgetfile' '/tmp/verilator_output.txt'  
+        copen 
+        redraw!
+    endif
+endfunction       
