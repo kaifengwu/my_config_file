@@ -35,13 +35,13 @@ inoremap " <ESC>:call Quotation1()<cr><ESC>
 inoremap ) )<ESC>i
 inoremap ] ]<ESC>i
 map <C-s> :cexpr[]<CR>:cclose<CR>:w<CR>
-map <C-q> <ESC>:cclose<CR>:cexpr[]<CR>:wq<CR>
+map <C-q> <ESC>:cclose<CR>:wq<CR>
 map <C-c> <ESC>:call Window()<CR>
 inoremap <C-c> <ESC>:call Window()<CR>
 inoremap <C-s> <ESC>:cexpr[]<CR>:cclose<CR>:w<CR>l
 inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
-inoremap <C-l> <ESC>%%a
-noremap <C-l> <ESC>%%a
+inoremap <C-l> <ESC>:call JumpToClosingParen()<CR>la
+map <C-l> :call JumpToClosingParen()<CR>la
 noremap - $
 set winaltkeys=no”
 "Use alt to use some function when input
@@ -77,9 +77,7 @@ noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
 inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
 inoremap <C-j> <ESC>^$:call Newline()<cr><ESC>
 noremap <C-j> <ESC>^$:call Newline()<cr><ESC>
-if exists('&guicursor')
-    set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr-o:hor20
-endif
+set guicursor=n-v-c:block,i-ci-ve:ver5,r-cr-o:hor20
 "Insert <tab> when previous text is space, refresh completion if not.
 " Configure the NERDTree plugin mapping button
 " Automatically open NERDTree after opening the file
@@ -112,24 +110,37 @@ call plug#end()
 "----------------------Verilog 相关的配套设置-----------------------------
 autocmd FileType verilog setlocal shiftwidth=4 softtabstop=4
 "在保存 .v 文件时运行 verilator 并加载错误到 Quickfix 窗口
-autocmd BufWritePost *.v :silent! execute '!verilator -cc --exe -Wno-lint -Wall % 2>&1
-            \| sed -E "s/^(\%Warning-.*:|\%Error:|.*) (.+).v:/ \2.v:/g" 
+autocmd BufWritePost *.v :silent! execute '!verilator -cc --exe 
+            \-Wno-lint -Wall % 2>&1
+            \| sed -E "s/^(\%Warning-.*:|\%Error: [^:]*:|.*) (.+).v:/ \2.v:/g" 
             \| grep -E "^.+\.v(:[0-9]+)+:"
             \| sort -n
-            \| tee /tmp/verilator_output.txt' 
+            \| tee /tmp/verilator_output.txt'
+            \| call LoadErrorMessage()
             \| redraw!
-autocmd VimEnter *.v :silent! execute '!verilator -cc --exe -Wno-lint -Wall % 2>&1
-            \| sed -E "s/^(\%Warning-.*:|\%Error:|.*) (.+).v:/ \2.v:/g" 
-            \| grep -E "^.+\.v(:[0-9]+)+:"
-            \| sort -n
-            \| tee /tmp/verilator_output.txt' 
-            \| redraw!
-autocmd VimEnter *.v call LoadErrorMessage()
+            \| call LoadMoudlesFromFile()
+autocmd FileType verilog map <C-b> :call Verilogformat()<CR>
+autocmd FileType verilog inoremap <C-b> <ESC>:call Verilogformat()<CR>
+autocmd VimEnter *.v : LoadCompletionFile /home/kaifeng/.vim/plugin/verilog.txt
+autocmd VimEnter *.v : call LoadMoudlesFromFile()
 set autowrite
-sign define error text=✖ texthl=ErrorMsg
 autocmd CursorHold *.v call ShowErrorPopup()
-autocmd BufWritePost *.v call LoadErrorMessage()
-"----------------------------------------------------------------------------
+set wildmode=full
+set wildmenu
+set completeopt=menuone,noinsert,noselect,preview
+set pumheight=10
+" 设置补全菜单背景为灰色，前景为黑色
+highlight Pmenu ctermbg=black ctermfg=grey
+
+" 设置补全菜单中选中项的背景为红色，前景为白色
+highlight PmenuSel ctermbg=red ctermfg=white
+
+" 设置滚动条背景为浅灰色
+highlight PmenuSbar ctermbg=lightgray
+
+" 设置滚动条的滚动指示部分为深灰色
+highlight PmenuThumb ctermbg=darkgray
+"---------------------------------------------------------------------------
 
 
  "plugin-config vim-clang-format
@@ -147,12 +158,19 @@ function! CheckBackspace() abort
 endfunction
 
 inoremap <silent><expr> <TAB>
-    \ coc#pum#visible() ? coc#pum#next(1):
+    \ TriggerAutoComplete(0) ? "\<C-n>" : 
+    \ coc#pum#visible()  ? coc#pum#next(1):
     \ CheckBackspace() ? "\<Tab>" :
     \ coc#refresh()
-inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
-        \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+inoremap <expr> <S-TAB> 
+    \ TriggerAutoComplete(0) ? "\<C-p>" : 
+    \coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+inoremap <silent><expr> <CR> 
+    \ TriggerAutoComplete(0) ? "\<C-y>\<space>" : 
+    \coc#pum#visible() ? coc#_select_confirm()
+    \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 
 nmap <silent> <leader>d :call CocAction('jumpDeclaration')<CR>
@@ -225,3 +243,4 @@ if has('persistent_undo')      "check if your vim version supports it
   set undofile                 "turn on the feature
   set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
 endif
+set complete-=i

@@ -4,6 +4,7 @@
 	email = core.editor
 [core]
 	editor = vim
+	sparseCheckout = true
 [color]
 	ui = true
 [alias]
@@ -15,5 +16,10 @@
 	cb = checkout -b
         ss = status
         ct = cat-file -p
-    ft = fetch
-    
+        ft = fetch
+        mtl= mergetool
+[http]
+	sslVerify = true
+	proxy = 127.0.0.1:7890
+[https]
+	proxy = 127.0.0.1:7890

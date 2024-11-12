@@ -4,13 +4,14 @@ function! LoadErrorMessage()
     "清空错误信息
 
     execute 'sign unplace *'
+    call clearmatches()
 
     let g:error_messages = {}
     let g:error_messages_2 = {}
     let l:error_file='/tmp/verilator_output.txt'
     sign define ErrorSign text=x texthl=Error
     highlight ErrorUnderline cterm=underline gui=underline guifg=Green guibg=NONE
-    if !filereadable(l:error_file)
+    if !filereadable(l:error_file)  
         return
     endif
     for line in readfile(l:error_file)
@@ -34,24 +35,29 @@ function! LoadErrorMessage()
             let g:error_messages_2[l:filename][l:line] = l:col
         endif
     endfor
-    echo $error_messages
 endfunction
 
 function! ShowErrorPopup()
+    let l:popup_handles = popup_list()
+    for handle in l:popup_handles
+            call popup_clear(handle)
+    endfor
     let l:filename = expand('%:t')
     let l:name = expand('%:p')
     let l:line_num = line('.')
     let l:col_num = col('.')
-    let l:popup_handles = popup_list()
+
     highlight pop ctermbg=blue  ctermfg=black guibg=green guifg=black gui=bold,italic
-        for handle in l:popup_handles
-                call popup_clear(handle)
-         endfor
+    if g:error_messages == {}
+        return
+    endif
 
-    if has_key(g:error_messages[l:filename], l:line_num) && abs(l:col_num - g:error_messages_2[l:filename][l:line_num]) <= 2 
-        let l:message = [g:error_messages[l:filename][l:line_num]]
+    if has_key(g:error_messages[l:filename], l:line_num)
 
-        call popup_create(l:message,{
+        if abs(l:col_num - g:error_messages_2[l:filename][l:line_num]) <= 2 
+            let l:message = [g:error_messages[l:filename][l:line_num]]
+
+            call popup_create(l:message,{
                     \ 'line': 'cursor+1',
                     \ 'col': 'cursor+4',
                     \ 'maxwidth': 60,
@@ -63,7 +69,8 @@ function! ShowErrorPopup()
                     \ 'title' : 'ERROR:',
                     \ 'highlight' : 'pop',
                     \ 'zindex': 10})
-        echo "error"
+        endif
+        echo "Error in this line"
     else
         echo "No error message found for this line"
 

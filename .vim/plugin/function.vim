@@ -1,6 +1,6 @@
 function! Annotate() 
     let  l = expand('%:e')
-    if l =='c' || l == 'h' || l == 'json'
+    if l =='c' || l == 'h' || l == 'json' || l =='v'
         if getline('.')[col('.')-1] == '/' || getline('.')[col('.')] == '/'
             call feedkeys("xx",'n')
         else 
@@ -78,3 +78,16 @@ function! Window()
         redraw!
     endif
 endfunction       
+
+function! JumpToClosingParen()
+  let line = getline('.')
+  let col = col('.')
+  let after_cursor = strpart(line, col)
+  
+  if match(after_cursor, '[()]') != -1
+    let match_pos = col('.') + match(after_cursor, '[()]') - 1
+    call cursor(line('.'), match_pos + 1)
+  else
+    echo "No parenthesis after cursor"
+  endif
+endfunction
