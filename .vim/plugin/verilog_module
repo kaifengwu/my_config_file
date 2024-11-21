@@ -1,5 +1,6 @@
 #!/bin/fish
 set input_file $argv[1]
+set line_number $argv[2]
 cat $input_file > tmp
 perl -0777 -ne ' 
     my $first = 1; 
@@ -31,5 +32,48 @@ perl -0777 -ne '
 cat tmp2 | sed -E 's/^([A-Za-z_0-9$]+)\(.*/\1/g'>>tmp
 rm tmp2
 
+set target_line (sed -n "$line_number p" $input_file)
+set start_line (sed -n "1,$line_number p" $input_file | tac | grep -m 1 -n 'module' | cut -d: -f1)
+set end_line (sed -n "$line_number,\$ p" $input_file | grep -m 1 -n 'endmodule' | cut -d: -f1)
 
+if test -n "$start_line" -a -n "$end_line"
+    set start_line (math $line_number - $start_line + 1)
+    set end_line (math $line_number + $end_line - 1)
+    sed -n "$start_line,$end_line p" $input_file\
+    | awk '/module/{flag=1;next} /endmodule/{flag=0} flag' \
+    | grep -E 'input|output|reg|wire' | sed -E 's/(input|output|reg|wire)//g' \
+    | sed -E 's/(\[.*\])//g' \
+    | tr -s ';,[]' '\n' \
+    | awk '{print $1}' \
+    | sort | uniq -c \
+    | awk '{print $2}'>tmp_variable
 
+    sed -n "$start_line,$end_line p" $input_file\
+    | awk '/module/{flag=1;next} /endmodule/{flag=0} flag' \
+    | grep -E 'input|output|reg|wire' \
+    | sed -E 's/(input|output|reg|wire)//g' \
+    | sort | awk '{$1=$1}1' \
+    | grep '\[' | sed -E 's/\[.*\]//g' \
+    | sed -E 's/( )+//g' \
+    | sed -E 's/([A-Za-z$0-9]+)/\1[:]/g' \
+    | tr -s ',;' '\n'>>tmp_variable
+else
+cat $input_file \
+    | awk '/module/{flag=1;next} /endmodule/{flag=0} flag' \
+    | grep -E 'input|output|reg|wire' | sed -E 's/(input|output|reg|wire)//g' \
+    | sed -E 's/(\[.*\])//g' \
+    | tr -s ';,[]' '\n' \
+    | awk '{print $1}' \
+    | sort | uniq -c \
+    | awk '{print $2}'>tmp_variable
+
+cat $input_file \
+     | awk '/module/{flag=1;next} /endmodule/{flag=0} flag' \
+     | grep -E 'input|output|reg|wire' \
+     | sed -E 's/(input|output|reg|wire)//g' \
+     | sort | awk '{$1=$1}1' \
+     | grep '\[' | sed -E 's/\[.*\]//g' \
+     | sed -E 's/( )+//g' \
+     | sed -E 's/([A-Za-z$0-9]+)/\1[:]/g' \
+     | tr -s ',;' '\n'>>tmp_variable
+end

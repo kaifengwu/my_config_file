@@ -116,9 +116,9 @@ autocmd BufWritePost *.v :silent! execute '!verilator -cc --exe
             \| grep -E "^.+\.v(:[0-9]+)+:"
             \| sort -n
             \| tee /tmp/verilator_output.txt'
-            \| call LoadErrorMessage()
-            \| redraw!
-            \| call LoadMoudlesFromFile()
+            \| silent! call LoadErrorMessage()
+            \| silent! redraw!
+            \| silent! call LoadMoudlesFromFile()
 autocmd FileType verilog map <C-b> :call Verilogformat()<CR>
 autocmd FileType verilog inoremap <C-b> <ESC>:call Verilogformat()<CR>
 autocmd VimEnter *.v : LoadCompletionFile /home/kaifeng/.vim/plugin/verilog.txt
@@ -168,7 +168,7 @@ inoremap <expr> <S-TAB>
     \coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 inoremap <silent><expr> <CR> 
-    \ TriggerAutoComplete(0) ? "\<C-y>\<space>" : 
+    \ TriggerAutoComplete(0) ?  "\<C-y>\<space>" : 
     \coc#pum#visible() ? coc#_select_confirm()
     \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 

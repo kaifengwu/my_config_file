@@ -1,4 +1,5 @@
 module
+module_endmodule
 endmodule
 input
 output
