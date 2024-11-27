@@ -1,0 +1,67 @@
+#!/bin/fish
+set input_file $argv[1]
+cat $input_file > tmp
+#爬取无参数模块
+perl -0777 -ne ' 
+    my $first = 1; 
+    while (/module\s+(\S[^#]*?\))/g) { 
+        my $module = $1; 
+
+        if ($first) { 
+            $first = 0; 
+            next; 
+        } 
+
+        $module =~ s/input/./g; 
+        $module =~ s/output/\@output\@/g; 
+        $module =~ s/^module\s+//; 
+        $module =~ s/\s//g; 
+        $module =~ s/\)/()\);/g; 
+        $module =~ s/,/(),/g; 
+        print "$module
+"; 
+} 
+' tmp | sed 's/\@output\@/%/' > tmp2; 
+
+perl -0777 -ne ' 
+    s/output/./g; 
+    s/%/ \/\*<-i | o->\*\/ ./g; 
+    s/\@//g; 
+    print $_; 
+' tmp2 | sed -E "s/\/\*.*\*\///g"\
+       |sed -E "s/.(\[[0-9:]+\])([^\(]+)\(\)/.\2()\/\*\1\*\/ /g" > tmp
+cat tmp2 | sed -E 's/^([A-Za-z_0-9$]+)\(.*/\1/g'>>tmp
+
+#爬取有参数模块
+perl -0777 -ne '
+    while (/module\s+(\S+)\s*#\((.*?)\)\s*\((.*?)\);/gs) {  
+        my $module = $1;  
+        my $parameters = $2;  
+        my $ports = $3;   
+
+        $ports =~ s/input/./g; 
+        $ports =~ s/output/\@output\@/g; 
+        $ports =~ s/\s//g;  
+        $ports =~ s/\)/()\);/g;  
+        $ports =~ s/,/(),/g;  
+
+        $parameters =~ s/\s//g;  
+        $parameters =~ s/parameter//g;
+        $parameters =~ s/=[0-9b\']/()/g;
+        $parameters =~ s/(\w+)/.\1/g;
+
+        print "$module #($parameters)&($ports);"; 
+} 
+' $input_file | sed 's/\@output\@/%/' > tmp3; 
+
+perl -0777 -ne ' 
+    s/output/./g; 
+    s/%/ \/\*<-i | o->\*\/ ./g; 
+    s/\@//g; 
+    print $_; 
+' tmp3 | sed -E "s/\/\*.*\*\///g"\
+       |sed -E "s/.(\[[0-9:]+\])([^\(]+)\(\)/.\2()\/\*\1\*\/ /g" > tmp_module_pa
+cat tmp3 | sed -E 's/^([^&]+)&\(.*/\n\1/g'>>tmp_module_pa
+cat tmp3 | sed -E 's/^([^#]+)#\(.*/\n\1/g'>>tmp_module_pa
+rm tmp2
+

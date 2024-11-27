@@ -1,0 +1,12 @@
+#!/bin/fish
+set input_file $argv[1]
+set mode $argv[2]
+if test $mode -eq 1 
+    verilator -cc --exe -Wno-lint -Wall $input_file 2>&1\
+        | sed -E "s/^(\%Warning-.*:|\%Error: [^:]*:|.*) (.+).v:(.*)/ \2.v:\3 [\1]/g"\
+        | grep -E "^.+\.v(:[0-9]+)+:"\
+        | sort -n>/tmp/verilator_output.txt
+else
+    awk '/^module/ {print " " FILENAME ":" NR ":" "0" ":jump to " $0 "\t"}' $input_file \
+        | sed -E 's/\(//g'>/tmp/verilator_output.txt
+end

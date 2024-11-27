@@ -79,15 +79,27 @@ function! Window()
     endif
 endfunction       
 
-function! JumpToClosingParen()
+function! JumpToClosingParen(mode)
   let line = getline('.')
   let col = col('.')
   let after_cursor = strpart(line, col)
-  
+  let before_cursor = strpart(line,0,col-1)
+  let reversed_before_cursor = reverse(before_cursor)
+ if a:mode == 1 
   if match(after_cursor, '[()]') != -1
     let match_pos = col('.') + match(after_cursor, '[()]') - 1
     call cursor(line('.'), match_pos + 1)
   else
     echo "No parenthesis after cursor"
+    call feedkeys("\<right>",'n')
   endif
+ else
+  if match(reversed_before_cursor, '[()]') != -1
+    let match_pos = col('.') - match(reversed_before_cursor, '[()]') - 3
+    call cursor(line('.'), match_pos + 1)
+  else
+    echo "No parenthesis after cursor"
+    call feedkeys("\<left>",'n')
+  endif
+ endif
 endfunction

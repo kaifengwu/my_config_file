@@ -40,8 +40,10 @@ map <C-c> <ESC>:call Window()<CR>
 inoremap <C-c> <ESC>:call Window()<CR>
 inoremap <C-s> <ESC>:cexpr[]<CR>:cclose<CR>:w<CR>l
 inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
-inoremap <C-l> <ESC>:call JumpToClosingParen()<CR>la
-map <C-l> :call JumpToClosingParen()<CR>la
+inoremap <C-l> <ESC>:call JumpToClosingParen(1)<CR>la
+map <C-l> :call JumpToClosingParen(1)<CR>l
+inoremap <C-h> <ESC>:call JumpToClosingParen(0)<CR>li
+map <C-h> :call JumpToClosingParen(0)<CR>l
 noremap - $
 set winaltkeys=no”
 "Use alt to use some function when input
@@ -110,25 +112,25 @@ call plug#end()
 "----------------------Verilog 相关的配套设置-----------------------------
 autocmd FileType verilog setlocal shiftwidth=4 softtabstop=4
 "在保存 .v 文件时运行 verilator 并加载错误到 Quickfix 窗口
-autocmd BufWritePost *.v :silent! execute '!verilator -cc --exe 
-            \-Wno-lint -Wall % 2>&1
-            \| sed -E "s/^(\%Warning-.*:|\%Error: [^:]*:|.*) (.+).v:/ \2.v:/g" 
-            \| grep -E "^.+\.v(:[0-9]+)+:"
-            \| sort -n
-            \| tee /tmp/verilator_output.txt'
-            \| silent! call LoadErrorMessage()
-            \| silent! redraw!
-            \| silent! call LoadMoudlesFromFile()
+autocmd BufWritePost *.v silent call LoadQuickfixMessage()
+
+let g:ERROR_MODULE = 1
+autocmd FileType verilog map <C-e> :call ModuleChange()<CR>
+autocmd FileType verilog inoremap <C-e> <ESC>:call ModuleChange()<CR>
+
 autocmd FileType verilog map <C-b> :call Verilogformat()<CR>
 autocmd FileType verilog inoremap <C-b> <ESC>:call Verilogformat()<CR>
 autocmd VimEnter *.v : LoadCompletionFile /home/kaifeng/.vim/plugin/verilog.txt
-autocmd VimEnter *.v : call LoadMoudlesFromFile()
+autocmd VimEnter *.v : call LoadMoudlesFromFile(0)
 set autowrite
-autocmd CursorHold *.v call ShowErrorPopup()
+autocmd CursorHold *.v silent call AutoLoadCompeletion()
+            \| call ShowPopup() 
+
 set wildmode=full
 set wildmenu
 set completeopt=menuone,noinsert,noselect,preview
 set pumheight=10
+
 " 设置补全菜单背景为灰色，前景为黑色
 highlight Pmenu ctermbg=black ctermfg=grey
 
@@ -243,4 +245,7 @@ if has('persistent_undo')      "check if your vim version supports it
   set undofile                 "turn on the feature
   set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
 endif
-set complete-=i
+set wildmode=list:longest
+set complete=.,w,b,u,t,i
+
+
