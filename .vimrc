@@ -37,13 +37,13 @@ inoremap ] ]<ESC>i
 map <C-s> :cexpr[]<CR>:cclose<CR>:w<CR>
 map <C-q> <ESC>:cclose<CR>:wq<CR>
 map <C-c> <ESC>:call Window()<CR>
-inoremap <C-c> <ESC>:call Window()<CR>
-inoremap <C-s> <ESC>:cexpr[]<CR>:cclose<CR>:w<CR>l
-inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
-inoremap <C-l> <ESC>:call JumpToClosingParen(1)<CR>la
-map <C-l> :call JumpToClosingParen(1)<CR>l
-inoremap <C-h> <ESC>:call JumpToClosingParen(0)<CR>li
-map <C-h> :call JumpToClosingParen(0)<CR>l
+autocmd FileType * inoremap <C-c> <ESC>:call Window()<CR>
+autocmd FileType * inoremap <C-s> <ESC>:cexpr[]<CR>:cclose<CR>:w<CR>l
+autocmd FileType * inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
+autocmd FileType * inoremap <C-l> <ESC>:call JumpToClosingParen(1)<CR>la
+autocmd FileType * map <C-l> :call JumpToClosingParen(1)<CR>l
+autocmd FileType * inoremap <C-h> <ESC>:call JumpToClosingParen(0)<CR>li
+autocmd FileType * map <C-h> :call JumpToClosingParen(0)<CR>l
 noremap - $
 set winaltkeys=no”
 "Use alt to use some function when input
@@ -61,6 +61,7 @@ inoremap <M-l> <Right>
 
 execute "set <M-o>=\eo"
 inoremap <M-o> <ESC>o
+noremap <M-o> <ESC>o
 
 execute "set <M-p>=\ep"
 inoremap <M-p> <ESC>pa
@@ -75,8 +76,8 @@ imap <A-k> <Up>
 imap <A-l> <Right>
 imap <A-w> <ESC>ebdei
 nmap <A-w> <ESC>ebde
-noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
-inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+autocmd FileType * noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+autocmd FileType * inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
 inoremap <C-j> <ESC>^$:call Newline()<cr><ESC>
 noremap <C-j> <ESC>^$:call Newline()<cr><ESC>
 set guicursor=n-v-c:block,i-ci-ve:ver5,r-cr-o:hor20
@@ -120,12 +121,15 @@ autocmd FileType verilog inoremap <C-e> <ESC>:call ModuleChange()<CR>
 
 autocmd FileType verilog map <C-b> :call Verilogformat()<CR>
 autocmd FileType verilog inoremap <C-b> <ESC>:call Verilogformat()<CR>
-autocmd VimEnter *.v : LoadCompletionFile /home/kaifeng/.vim/plugin/verilog.txt
+autocmd VimEnter *.v : LoadCompletionFile /home/kaifeng/.vim/plugin/verilog_function/verilog.txt
 autocmd VimEnter *.v : call LoadMoudlesFromFile(0)
 set autowrite
 autocmd CursorHold *.v silent call AutoLoadCompeletion()
             \| call ShowPopup() 
-
+autocmd FileType verilog inoremap <silent><expr> <C-j> g:jump? "<ESC>:call JumpToModule(1)<cr>zz" : "<ESC>^$:call Newline()<cr><ESC>"
+autocmd FileType verilog map <silent><expr> <C-j> g:jump? "<ESC>:call JumpToModule(1)<cr>zz" : "<ESC>^$:call Newline()<cr><ESC>"
+autocmd FileType verilog map <C-k> <ESC>:call JumpToModule(0)<cr>zz
+autocmd FileType verilog inoremap <C-k> <ESC>:call JumpToModule(0)<cr>zz
 set wildmode=full
 set wildmenu
 set completeopt=menuone,noinsert,noselect,preview
@@ -195,7 +199,7 @@ set incsearch
 set hidden
 set nobackup
 set nowritebackup
-set updatetime=300
+set updatetime=500
 set shortmess+=atI
 set signcolumn=yes
 set nonumber

@@ -52,7 +52,7 @@ if test -n "$start_line" -a -n "$end_line"
 
     #爬取模块名称
     sed -n "$start_line p" $input_file\
-        | sed -E 's/^\s*module\s*(\w+)\s*\(/\1/g'>>tmp_module_name
+        | sed -E 's/^\s*module\s*(\w+)\s*(\()?/\1/g'>>tmp_module_name
 else
 cat $input_file \
     | awk '/module/{flag=1;next} /endmodule/{flag=0} flag' \

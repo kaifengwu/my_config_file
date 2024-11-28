@@ -1,12 +1,12 @@
-let g:external_word_list = []
-let g:external_module_list = []
-let g:external_variable_list = []
-let g:external_variable_property = {}
-let g:external_variable_from = {}
-let g:external_variable_to = {}
-let g:external_module_IO = {}
-let g:module_now = []
-let g:module_complete = []
+let g:external_word_list = [] "基本词汇列表
+let g:external_module_list = [] "模块列表
+let g:external_variable_list = [] "变量列表
+let g:external_variable_property = {} "变量属性
+let g:external_variable_from = {} "变量来源列表
+let g:external_variable_to = {}  "变量去向列表
+let g:external_module_IO = {} "模块端口
+let g:module_now = [] "光标当前所在模块
+let g:module_complete = [] "补全列表模块
 
 
 function! s:LoadWordsFromFile(filepath)"抓常用词的函数
@@ -49,6 +49,7 @@ function! LoadMoudlesFromFile(mode)"抓模块的函数和变量
                 let g:external_module_IO[l:function_name] = l:line
             endif
         endfor
+        silent! execute '!rm tmp'
     "有参数的模块提取
         let l:content = readfile("./tmp_module_pa")
             for l:line in l:content
@@ -62,7 +63,7 @@ function! LoadMoudlesFromFile(mode)"抓模块的函数和变量
             endif
         endfor
         let g:external_module_list = uniq(sort(l:words))
-        silent! execute '!rm tmp'
+        silent! execute '!rm tmp_module_pa'
     endif
 "变量提取
     if a:mode == 1
@@ -88,8 +89,7 @@ function! LoadMoudlesFromFile(mode)"抓模块的函数和变量
         endif
     endfor
     let g:external_variable_list = uniq(sort(l:words))
-    "silent! execute '!rm tmp_variable'
-    silent! execute '!rm tmp_module_name'
+    silent! execute '!rm tmp*'
 endfunction
 
 
@@ -295,7 +295,7 @@ endfunction
 
 function! AutoLoadCompeletion()
     call GetModuleDeclaration()
-    if g:module_now != g:module_complete
+    if g:module_now != g:module_complete "判断光标是否切换了模块
         call LoadMoudlesFromFile(1)
     endif
 endfunction

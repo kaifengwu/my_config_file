@@ -1,0 +1,67 @@
+#!/bin/fish
+set input_file $argv[1]
+set line_number $argv[2]
+set variable_name $argv[3]
+touch tmp_variable_message
+touch tmp_variable_message_2
+touch variable_message_list 
+
+#爬取光标所在模块中的变量
+set target_line (sed -n "$line_number p" $input_file)
+set start_line (sed -n "1,$line_number p" $input_file | tac | grep -m 1 -n 'module' | cut -d: -f1)
+set end_line (sed -n "$line_number,\$ p" $input_file | grep -m 1 -n 'endmodule' | cut -d: -f1)
+
+    set start_line (math $line_number - $start_line + 1)
+    set end_line (math $line_number + $end_line - 1)
+    sed -n "$start_line,$end_line p" $input_file\
+        | grep -En "\b$variable_name\b"\
+        | sed -E 's/^([0-9]+:)\s+/\1/g'\
+        | sed -E 's/^[0-9]+:(wire|reg|inout|output|input)\s+.*/\/TYPE:\1\//g'\
+        | grep -E "(\(\s*$variable_name\s*\)|\(\{.*\b$variable_name\b.*\}\)|wire|reg|inout|output|input)"\
+        | sort -n>tmp_variable_message
+set n 1
+set line (wc -l <./tmp_variable_message)
+set line (math $line + 1)
+
+while test $n -lt $line 
+  set -l line_tmp (sed -n "$n p" ./tmp_variable_message)
+  if string match --regex --quiet '^[0-9]+:\.\w+\s*\(.*\)' -- "$line_tmp"
+    #echo $n
+    set -l line_number (sed -n "$n p" ./tmp_variable_message | sed -E "s/^([0-9]+).*/\1/g")
+    set -l line_IO (sed -n "$n p" ./tmp_variable_message | sed -E "s/^[0-9]+:\.(.*\)).*/\1/g")
+    #echo  $line_number
+    set i  (math $line_number + $start_line - 1)
+    #如果找到了行号，从第二个文件的该行号开始向上搜索
+    if test -n "$line_number"
+        set type "Input"
+        set arrow "<--|"
+        #从第二个文件的该行号开始向上搜索，直到找到以单词开头的行
+        while test $i -gt $start_line
+            set -l line (sed -n "$i p" $input_file)
+            if test -n "$line"
+                set -l trimmed_line (string trim -- $line)
+                if string match --regex --quiet 'i \| o' -- "$trimmed_line"  
+                    if test $i != (math $line_number + $start_line - 1)
+                        set type "Output"
+                        set arrow "|-->"
+                    end
+                end
+                if string match --regex --quiet '^[[:alpha:]][[:alpha:]]*' -- "$trimmed_line"
+                    set -l first_two_words (echo $trimmed_line | awk '{print $1 " " $2}')
+                    set IO  "(line $i)($type) $first_two_words $arrow $line_IO "
+                    echo $IO>>tmp_variable_message_2
+                    break
+                end
+            end
+            set i (math $i -1)
+        end
+    end  
+  end
+  set n (math $n + 1)
+end
+cat ./tmp_variable_message | head -n 1 >variable_message_list
+cat tmp_variable_message_2 | grep -E "\bOutput\b">>variable_message_list
+cat tmp_variable_message_2 | grep -E "\bInput\b">>variable_message_list
+rm tmp_variable_message_2
+#rm tmp_variable_message
+
