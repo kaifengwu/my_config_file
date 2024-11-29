@@ -81,11 +81,13 @@ function! LoadMoudlesFromFile(mode)"抓模块的函数和变量
             let line_tmp = strpart(l:line,0,match(l:line,'/'))
             let l:variable_name = trim(matchstr(' ' . line_tmp,'\v^(\w+)','1'))
             let l:words += filter(split(l:line_tmp, '[^a-zA-Z0-9$_]+'),'v:val != "" && v:val != " "')
-            let g:external_variable_property[l:variable_name] = strpart(l:line,match(l:line,'/')) 
+            let l:line_tmp = substitute(strpart(l:line,match(l:line,'/')),'/\*','','g') 
+            let l:line_tmp = substitute(l:line_tmp,'\*/','','g') 
+            let g:external_variable_property[l:variable_name] = l:line_tmp
         else 
             let l:variable_name = trim(matchstr(' ' . line,'\v^([^ ]+)','1'))
             let l:words += filter(split(l:line, '[^a-zA-Z0-9$_]+'),'v:val != "" && v:val != " "')
-            let g:external_variable_property[l:variable_name] = 'No note' 
+            let g:external_variable_property[l:variable_name] = 'Empty' 
         endif
     endfor
     let g:external_variable_list = uniq(sort(l:words))

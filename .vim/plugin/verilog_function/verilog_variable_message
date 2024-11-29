@@ -17,7 +17,7 @@ set end_line (sed -n "$line_number,\$ p" $input_file | grep -m 1 -n 'endmodule' 
         | grep -En "\b$variable_name\b"\
         | sed -E 's/^([0-9]+:)\s+/\1/g'\
         | sed -E 's/^[0-9]+:(wire|reg|inout|output|input)\s+.*/\/TYPE:\1\//g'\
-        | grep -E "(\(\s*$variable_name\s*\)|\(\{.*\b$variable_name\b.*\}\)|wire|reg|inout|output|input)"\
+        | grep -E "(\(\s*$variable_name\s*(\[.*\])*\)|\(\{.*\b$variable_name\b.*\}\)|wire|reg|inout|output|input)"\
         | sort -n>tmp_variable_message
 set n 1
 set line (wc -l <./tmp_variable_message)
@@ -28,7 +28,7 @@ while test $n -lt $line
   if string match --regex --quiet '^[0-9]+:\.\w+\s*\(.*\)' -- "$line_tmp"
     #echo $n
     set -l line_number (sed -n "$n p" ./tmp_variable_message | sed -E "s/^([0-9]+).*/\1/g")
-    set -l line_IO (sed -n "$n p" ./tmp_variable_message | sed -E "s/^[0-9]+:\.(.*\)).*/\1/g")
+    set -l line_IO (sed -n "$n p" ./tmp_variable_message | sed -E "s/^[0-9]+:\.(\w+\(.*\)).*/\1/g")
     #echo  $line_number
     set i  (math $line_number + $start_line - 1)
     #如果找到了行号，从第二个文件的该行号开始向上搜索
@@ -63,5 +63,5 @@ cat ./tmp_variable_message | head -n 1 >variable_message_list
 cat tmp_variable_message_2 | grep -E "\bOutput\b">>variable_message_list
 cat tmp_variable_message_2 | grep -E "\bInput\b">>variable_message_list
 rm tmp_variable_message_2
-#rm tmp_variable_message
+rm tmp_variable_message
 

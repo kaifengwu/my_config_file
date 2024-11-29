@@ -29,8 +29,7 @@ perl -0777 -ne '
     s/%/ \/\*<-i | o->\*\/ ./g; 
     s/\@//g; 
     print $_; 
-' tmp2 | sed -E "s/\/\*.*\*\///g"\
-       |sed -E "s/.(\[[0-9:]+\])([^\(]+)\(\)/.\2()\/\*\1\*\/ /g" > tmp
+' tmp2 |sed -E "s/.(\[[0-9:]+\])([^\(]+)\(\)/.\2()\/\*\1\*\/ /g" > tmp
 cat tmp2 | sed -E 's/^([A-Za-z_0-9$]+)\(.*/\1/g'>>tmp
 
 #爬取有参数模块
@@ -49,7 +48,7 @@ perl -0777 -ne '
         $parameters =~ s/\s//g;  
         $parameters =~ s/parameter//g;
         $parameters =~ s/\/\*.*\*\///g;
-        $parameters =~ s/=[0-9b\']/()/g;
+        $parameters =~ s/=[0-9b\']+/()/g;
         $parameters =~ s/(\w+)/.\1/g;
 
         print "$module #($parameters)&($ports());"; 

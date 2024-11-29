@@ -40,7 +40,7 @@ if test -n "$start_line" -a -n "$end_line"
 
     #爬取多端口变量
     sed -n "$start_line,$end_line p" $input_file\
-    | awk '/module/{flag=1;next} /endmodule/{flag=0} flag' \
+    | awk '/module/{flag=1;next} /endmodule/{flag=0} flag'\
     | grep -E '^\s*(inout|input|output|reg|wire)' \
     | sed -E 's/(inout|input|output|reg|wire)//g' \
     | sed -E 's/^\s*\/\*.*\*\///g'\

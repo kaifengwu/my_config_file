@@ -103,6 +103,7 @@ function! ShowErrorPopup()"展示错误信息
 endfunction
 let g:variable_message_IO = ''
 let g:variable_IO = {}
+
 function! ShowVariablePopup()"展示变量信息
     let l:popup_handles = popup_list()
 
@@ -110,13 +111,17 @@ function! ShowVariablePopup()"展示变量信息
             call popup_clear(handle)
     endfor
     let g:word = expand('<cword>')
+    "展示变量对应的信息
     if has_key(g:external_variable_property, g:word) && getline('.')[col('.') - 1] =~ '\w'
-        if g:variable_message_IO !=#  g:word
+        if g:external_variable_property[g:word] =~ '-PARAMETER-'
+            let g:variable_IO = [g:external_variable_property[g:word]]
+        elseif g:variable_message_IO !=#  g:word
             let g:variable_IO = {}
             let g:variable_message_IO = g:word
             silent! execute '!~/.vim/plugin/verilog_function/verilog_variable_message'  expand('%') . ' ' . line('.') . ' ' . g:word
-            silent! execute '!sed -i "1i ' . shellescape(g:external_variable_property[g:word]) . '" ./variable_message_list'
+            silent! execute '!sed -i "1i ' . "Your Note: " . shellescape(g:external_variable_property[g:word]) . '" ./variable_message_list'
             let g:variable_IO = readfile("./variable_message_list")
+            silent! execute '!rm variable_message_list'
         endif
         call popup_create(g:variable_IO,{
                     \ 'line': 'cursor+1',
@@ -131,6 +136,7 @@ function! ShowVariablePopup()"展示变量信息
                     \ 'highlight' : 'pop',
                     \ 'zindex': 10})
     elseif has_key(g:external_module_IO, g:word) && getline('.')[col('.') - 1] =~ '\w'
+        let g:variable_message_IO = g:word
         let g:jump = 1
         let l:message = "push <C-j>: jump to module " . g:word . " |  then push <C-k> will come back here"
         call popup_create(l:message,{
@@ -146,6 +152,7 @@ function! ShowVariablePopup()"展示变量信息
                     \ 'highlight' : 'pop',
                     \ 'zindex': 10})
     else
+        let g:variable_message_IO = g:word "防止你从变量名称到其他地方做了修改，又回到这个名称，变了没修正
         let g:jump = 0
     endif
 endfunction
