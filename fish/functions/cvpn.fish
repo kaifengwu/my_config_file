@@ -11,10 +11,10 @@ export http_proxy=""
 export https_proxy=""
 export no_proxy=""
 gsettings set org.gnome.system.proxy mode 'none'
-set JOB (jobs | grep cfw | awk '{ print $1 }') 
-jobs | grep cfw
+set JOB (ps aux | grep cfw | awk '{print $2}')
 if test $status -eq 0
-    kill %$JOB
-    kill %$JOB
+    kill  $JOB
+    kill  $JOB
 end
 end
+
