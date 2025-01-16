@@ -15,38 +15,44 @@ set bg=dark             " Show different background tones
 set laststatus=2        " Always display the status bar
 set list lcs=tab:\|\   		" Set to use a vertical bar "|" when displaying Tab characters
 set relativenumber
+set shortmess+=c
+noremap - $
+set winaltkeys=no”
 let g:filename = expand('%')
 filetype plugin indent on
 
 autocmd BufWritePost $MYVIMRC source $MYVIMRC
-"signle character can't trigger function
+"智能按键操作
+autocmd FileType * inoremap } <ESC>:call Quotation4()<cr><ESC>
 
+autocmd FileType * inoremap ' '<ESC>:call Quotation3()<cr><ESC>
 
+autocmd FileType * inoremap > <ESC>:call Quotation2()<cr><ESC>
 
-inoremap } <ESC>:call Quotation4()<cr><ESC>
-
-inoremap ' '<ESC>:call Quotation3()<cr><ESC>
-"inoremap <silent>' '<ESC>:call Quotation3()<cr><ESC> 
-
-inoremap > <ESC>:call Quotation2()<cr><ESC>
-
-inoremap " <ESC>:call Quotation1()<cr><ESC>
-"Set Automatically Complete Parentheses
-inoremap ) )<ESC>i
-inoremap ] ]<ESC>i
-map <C-s> :cexpr[]<CR>:cclose<CR>:w<CR>
-map <C-q> <ESC>:cclose<CR>:wq<CR>
-map <C-c> <ESC>:call Window()<CR>
-autocmd FileType * inoremap <C-c> <ESC>:call Window()<CR>
+autocmd FileType * inoremap " <ESC>:call Quotation1()<cr><ESC>
+"自动补全括号
+autocmd FileType * inoremap ) )<ESC>i
+autocmd FileType * inoremap ] ]<ESC>i
+"特殊按键映射
+"保存功能
+autocmd FileType * map <C-s> :cexpr[]<CR>:cclose<CR>:w<CR>
 autocmd FileType * inoremap <C-s> <ESC>:cexpr[]<CR>:cclose<CR>:w<CR>l
+"打开终端
+autocmd FileType * map <C-t> :term<CR>
+autocmd FileType * inoremap <C-t> :<ESC>term<CR>
+"保存并退出
+autocmd FileType * map <C-q> <ESC>:cclose<CR>:wq<CR>
 autocmd FileType * inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
+"打开/关闭quickfix端口
+autocmd FileType * map <C-c> <ESC>:call Window()<CR>
+autocmd FileType * inoremap <C-c> <ESC>:call Window()<CR>
+"快速切换括号功能
 autocmd FileType * inoremap <C-l> <ESC>:call JumpToClosingParen(1)<CR>la
 autocmd FileType * map <C-l> :call JumpToClosingParen(1)<CR>l
 autocmd FileType * inoremap <C-h> <ESC>:call JumpToClosingParen(0)<CR>li
 autocmd FileType * map <C-h> :call JumpToClosingParen(0)<CR>l
-noremap - $
-set winaltkeys=no”
-"Use alt to use some function when input
+"使用alt键恢复部分普通模式功能
+"上下左右
 execute "set <M-h>=\eh"
 inoremap <M-h> <Left> 
 
@@ -58,29 +64,31 @@ inoremap <M-k> <Up>
 
 execute "set <M-l>=\el"
 inoremap <M-l> <Right> 
+"o键打开下一行
+autocmd FileType * execute "set <M-o>=\eo"
+autocmd FileType * inoremap <M-o> <ESC>o
+autocmd FileType * noremap <M-o> <ESC>o
+"黏贴
+autocmd FileType * execute "set <M-p>=\ep"
+autocmd FileType * inoremap <M-p> <ESC>pa
 
-execute "set <M-o>=\eo"
-inoremap <M-o> <ESC>o
-noremap <M-o> <ESC>o
-
-execute "set <M-p>=\ep"
-inoremap <M-p> <ESC>pa
-
-execute "set <M-w>=\ew"
-inoremap <M-w> <ESC>ebdei
-nnoremap <M-w> <ESC>ebde
+autocmd FileType * execute "set <M-w>=\ew"
+autocmd FileType * inoremap <M-w> <ESC>ebdei
+autocmd FileType * nnoremap <M-w> <ESC>ebde
 
 imap <A-h> <Left>
 imap <A-j> <Down>
 imap <A-k> <Up>
 imap <A-l> <Right>
-imap <A-w> <ESC>ebdei
-nmap <A-w> <ESC>ebde
-autocmd FileType * noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
-autocmd FileType * inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+autocmd FileType * imap <A-w> <ESC>ebdei
+autocmd FileType * nmap <A-w> <ESC>ebde
+"注释
+noremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+inoremap <C-x> <ESC>^:call Annotate()<cr><ESC>
+"智能换行
 inoremap <C-j> <ESC>^$:call Newline()<cr><ESC>
 noremap <C-j> <ESC>^$:call Newline()<cr><ESC>
-set guicursor=n-v-c:block,i-ci-ve:ver5,r-cr-o:hor20
+autocmd FileType * set guicursor=n-v-c:block,i-ci-ve:ver5,r-cr-o:hor20
 "Insert <tab> when previous text is space, refresh completion if not.
 " Configure the NERDTree plugin mapping button
 " Automatically open NERDTree after opening the file
@@ -108,28 +116,12 @@ Plug 'neoclide/coc.nvim', { 'branch': 'release'}
 Plug 'rhysd/vim-clang-format' ", {'for' : ['c', 'cpp']}
 Plug 'chxuan/cpp-mode' ", {'for' : ['cpp']}
 Plug 'nvim-lua/popup.nvim'
+Plug 'derekwyatt/vim-scala'
 call plug#end()
 
-"----------------------Verilog 相关的配套设置-----------------------------
-autocmd FileType verilog setlocal shiftwidth=4 softtabstop=4
-"在保存 .v 文件时运行 verilator 并加载错误到 Quickfix 窗口
-autocmd BufWritePost *.v silent call LoadQuickfixMessage()
-
-let g:ERROR_MODULE = 1
-autocmd FileType verilog map <C-e> :call ModuleChange()<CR>
-autocmd FileType verilog inoremap <C-e> <ESC>:call ModuleChange()<CR>
-
-autocmd FileType verilog map <C-b> :call Verilogformat()<CR>
-autocmd FileType verilog inoremap <C-b> <ESC>:call Verilogformat()<CR>
 autocmd VimEnter *.v : LoadCompletionFile /home/kaifeng/.vim/plugin/verilog_function/verilog.txt
-autocmd VimEnter *.v : call LoadMoudlesFromFile(0)
+"补全相关设置
 set autowrite
-autocmd CursorHold *.v silent call AutoLoadCompeletion()
-            \| call ShowPopup() 
-autocmd FileType verilog inoremap <silent><expr> <C-j> g:jump? "<ESC>:call JumpToModule(1)<cr>zz" : "<ESC>^$:call Newline()<cr><ESC>"
-autocmd FileType verilog map <silent><expr> <C-j> g:jump? "<ESC>:call JumpToModule(1)<cr>zz" : "<ESC>^$:call Newline()<cr><ESC>"
-autocmd FileType verilog map <C-k> <ESC>:call JumpToModule(0)<cr>zz
-autocmd FileType verilog inoremap <C-k> <ESC>:call JumpToModule(0)<cr>zz
 set wildmode=full
 set wildmenu
 set completeopt=menuone,noinsert,noselect,preview
@@ -163,21 +155,18 @@ function! CheckBackspace() abort
     return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 
+
 inoremap <silent><expr> <TAB>
-    \ TriggerAutoComplete(0) ? "\<C-n>" : 
     \ coc#pum#visible()  ? coc#pum#next(1):
     \ CheckBackspace() ? "\<Tab>" :
     \ coc#refresh()
 
 inoremap <expr> <S-TAB> 
-    \ TriggerAutoComplete(0) ? "\<C-p>" : 
     \coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 inoremap <silent><expr> <CR> 
-    \ TriggerAutoComplete(0) ?  "\<C-y>\<space>" : 
     \coc#pum#visible() ? coc#_select_confirm()
     \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
 
 nmap <silent> <leader>d :call CocAction('jumpDeclaration')<CR>
 nmap <silent> <leader>i :call CocAction('jumpDefinition')<CR>
@@ -237,6 +226,7 @@ set background=dark
 set formatoptions=c,l,1,p
 set expandtab
 set nowrap
+"set completeopt=menuone,noinsert,noselect,preview 
 " options }}}
 
 " Uncomment the following to have Vim jump to the last position when reopening a file
@@ -250,6 +240,15 @@ if has('persistent_undo')      "check if your vim version supports it
   set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
 endif
 set wildmode=list:longest
-set complete=.,w,b,u,t,i
+"set complete=.,w,b,u,t,i
 
 
+" 设置补全菜单背景为灰色，前景为黑色
+ autocmd FileType scala highlight Pmenu ctermbg=black ctermfg=grey
+" 设置补全菜单中选中项的背景为红色，前景为白色
+ autocmd FileType scala highlight PmenuSel ctermbg=red ctermfg=white
+" 设置滚动条背景为浅灰色
+ autocmd FileType scala highlight PmenuSbar ctermbg=lightgray
+" 设置滚动条的滚动指示部分为深灰色
+ autocmd FileType scala highlight PmenuThumb ctermbg=darkgray
+"---------------------------------------------------------------------------

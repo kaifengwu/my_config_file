@@ -1,0 +1,4 @@
+2025.01.13 22:27:09 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/kaifeng/gits/dotfiles/fish/.metals/lsp.trace.json or /home/kaifeng/.cache/metals/lsp.trace.json[0m
+2025.01.13 22:27:10 INFO  logging to file /home/kaifeng/gits/dotfiles/.metals/metals.log[0m
+2025.01.13 22:45:22 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/kaifeng/gits/dotfiles/fish/.metals/lsp.trace.json or /home/kaifeng/.cache/metals/lsp.trace.json[0m
+2025.01.13 22:45:22 INFO  logging to file /home/kaifeng/gits/dotfiles/.metals/metals.log[0m
