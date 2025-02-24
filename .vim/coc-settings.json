@@ -44,8 +44,8 @@
  "config":{
   "suggest.noselect": false, // 不自动选中第一个补全项
   "suggest.enablePreview": true, // 启用补全预览
-  "suggest.enablePreselect": true, // 禁用预选
-  "suggest.autoTrigger": "trigger", // 仅在触发字符时显示补全
+  //"suggest.enablePreselect": true, // 禁用预选
+  //"suggest.autoTrigger": "trigger", // 仅在触发字符时显示补全
   "suggest.detailField": "preview", // 在预览窗口中显示详细信息
   "suggest.ignoreCase": true
 }

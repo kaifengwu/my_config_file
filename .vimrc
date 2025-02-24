@@ -116,6 +116,10 @@ Plug 'neoclide/coc.nvim', { 'branch': 'release'}
 Plug 'rhysd/vim-clang-format' ", {'for' : ['c', 'cpp']}
 Plug 'chxuan/cpp-mode' ", {'for' : ['cpp']}
 Plug 'nvim-lua/popup.nvim'
+" 安装 vim-airline 插件
+Plug 'vim-airline/vim-airline'
+" 安装 vim-airline 主题插件（可选）
+Plug 'vim-airline/vim-airline-themes'
 Plug 'derekwyatt/vim-scala'
 call plug#end()
 
