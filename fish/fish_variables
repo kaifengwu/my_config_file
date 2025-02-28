@@ -4,6 +4,7 @@ SETUVAR --export JAVA_HOME:/usr/lib/jvm/java\x2d17\x2dopenjdk\x2damd64
 SETUVAR --export NEMU_HOME:/home/kaifeng/ysyx\x2dworkbench/nemu
 SETUVAR --export NVBOARD_HOME:/home/kaifeng/ysyx\x2dworkbench/nvboard
 SETUVAR --export --path PATH:/usr/lib/jvm/temurin\x2d17\x2djdk/bin\x1e/usr/lib/jvm/temurin\x2d17\x2djdk/bin\x1e/usr/bin\x1e/bin\x1e/usr/local/bin\x1e/usr/sbin\x1e/sbin
+SETUVAR --export --path RISCV_PATH:/opt/riscv\x2dlinux/
 SETUVAR __fish_initialized:3100
 SETUVAR fish_color_autosuggestion:555\x1ebrblack
 SETUVAR fish_color_cancel:\x2dr

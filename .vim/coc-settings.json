@@ -4,6 +4,9 @@
     "command": "clangd",
     "rootPatterns": ["compile_flags.txt", "compile_commands.json",".git"],
     "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
+    "clangd.arguments": [
+    "--compile-commands-dir=~/ysyx-workbench/nemu"
+  ],
       "args":[
         "--compile-commands-dir=build",
         "--compile_args_from=filesystem",
@@ -48,15 +51,14 @@
   //"suggest.autoTrigger": "trigger", // 仅在触发字符时显示补全
   "suggest.detailField": "preview", // 在预览窗口中显示详细信息
   "suggest.ignoreCase": true
-}
-//}
-    //"scala": {
-        //"enable": true,
-        //"command": "metals",
-        //"args": [],
-        //"filetypes": ["scala"],
-        //"enableSingleFileMode" : true
-//}
+}, 
+"workspace": {
+    "folders": [
+      "~/ysyx-workbench/nemu",
+      "~/chisel"
+    ]
+  }
+
 }
    //"verible": {
             //"command": "/usr/bin/verible-verilog-ls",
