@@ -1,4 +1,5 @@
 function tran --wraps='trans -s en -t zh-CN' --description 'alias tran=trans -s en -t zh-CN'
+    set b ''
     if test -x /usr/bin/xclip
         set clipboard_command "xclip -o -selection clipboard"
     else if test -x /usr/bin/pbpaste
@@ -13,20 +14,39 @@ function tran --wraps='trans -s en -t zh-CN' --description 'alias tran=trans -s 
         echo "请输入翻译内容："
         # 使用 `read` 命令获取输入，`-l` 标志表示将输入内容保存在 `input` 变量中
         read input
-        if test "$input" = "exit"
+        if test "$input" = "exit" || test "$input" = "q"
             echo "退出程序。"
             break
+        else if test "$input" = "b" 
+            echo "开启轻量模式。"
+            set mode b
+            continue
+        else if test "$input" = "h" 
+            echo "开启完整模式。"
+            set mode h 
+            continue
+        else if test "$input" = "c" 
+            echo "开启汉译英模式。"
+            set mode c 
+            continue
+        else if test -z "$input"
+            set input (eval $clipboard_command | sed ':a;N;$!ba;s/\n/ /g' )
         end
-        if test -z "$input"
-            set input (eval $clipboard_command)
-        end
+        set input ( echo -e "$input" | sed ':a;N;$!ba;s/\n/ /g' )
         #输出获取到的输入
         #set text (trans -s en -t zh-CN $input)
         #clear
         echo "原文:"
         echo $input
         echo "译文:"
-        trans -b -s en -t zh-CN $input | sed 's/Translations of[a-zA-Z0-9\s]+简体中文//g'
+        if test "$mode" = "b"
+            trans -b -s en -t zh-CN $input
+        else if test "$mode" = "c"
+            trans -s zh-CN -t en  $input
+        else
+            trans -s en -t zh-CN $input
+        end
+        #\ | sed 's/Translations of[a-zA-Z0-9\s]+简体中文//g'
 
         # 1. 删除从 "translations of" 到 "简体中文" 之间的所有内容
         

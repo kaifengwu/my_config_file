@@ -44,8 +44,12 @@ autocmd FileType * inoremap <C-t> :<ESC>term<CR>
 autocmd FileType * map <C-q> <ESC>:cclose<CR>:wq<CR>
 autocmd FileType * inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
 "打开/关闭quickfix端口
-autocmd FileType * map <C-c> <ESC>:call Window()<CR>
+autocmd FileType * nnoremap <C-c> <ESC>:call Window()<CR>
 autocmd FileType * inoremap <C-c> <ESC>:call Window()<CR>
+" 可视模式下按 Ctrl-C 复制到剪贴板
+autocmd FileType * vnoremap <C-c> "+y
+autocmd FileType * nnoremap <C-v> "+p
+autocmd FileType * inoremap <C-v> <ESC>"+pa
 "快速切换括号功能
 autocmd FileType * inoremap <C-l> <ESC>:call JumpToClosingParen(1)<CR>la
 autocmd FileType * map <C-l> :call JumpToClosingParen(1)<CR>l
