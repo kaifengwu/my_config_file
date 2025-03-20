@@ -1,13 +1,11 @@
 {
-"languageserver":{
-  "coc-clangd": {
-    "command": "clangd",
-    "rootPatterns": ["compile_flags.txt", "compile_commands.json",".git"],
-    "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
-    "clangd.arguments": [
-    "--compile-commands-dir=~/ysyx-workbench/nemu"
-  ],
-      "args":[
+  "languageserver": {
+    "coc-clangd": {
+      "command": "clangd",
+      "rootPatterns": ["compile_flags.txt", "compile_commands.json", ".git"],
+      "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
+      "clangd.arguments": ["--compile-commands-dir=~/ysyx-workbench/nemu"],
+      "args": [
         "--compile-commands-dir=build",
         "--compile_args_from=filesystem",
         "--all-scopes-completion",
@@ -25,88 +23,34 @@
         "--pch-storage=memory"
       ]
     },
-  "metals": {
-    "command": "metals",
-    "rootPatterns": ["build.sbt", "build.sc"],
-    "filetypes" : ["scala","sbt"],
-    "serverVersion": "1.4.2", // 指定 Metals 版本
-    "askToImportBuild": false, // 禁用导入构建的提示
-    "initializationOptions": {
+
+    "metals": {
+      "command": "metals",
+      "rootPatterns": ["build.sbt", "build.sc"],  // ✅ 仅在 Scala 项目启动
+      "disableWorkspaceFolders": true,
+      //"disabledFeatures": ["workspaceFolders"],
+      "filetypes": ["scala", "sbt"],  // ✅ 禁止在其他文件触发 Metals
+      "autostart": false,  // ✅ 需要时手动启动 Metals
+      "serverVersion": "1.4.2",
+      "askToImportBuild": false,
+      "initializationOptions": {
         "isHttpEnabled": true,
-        "skipBuildImportOnInitialImport": true // 禁用自动构建
-    },
-    "args": [],
-    //"serverProperties": [
-      //"-Dmetals.client=coc.nvim",
-      //"-Xss4m",
-      //"-Xms100m"
-    //],
-    //"customRepositories": [],
-    //"serverPath": "" // 如果手动安装了 Metals，填写路径
+        "skipBuildImportOnInitialImport": true,
+        "disableWorkspaceFolders": true,  // ❌ 禁止自动检测 workspace
+        //"disabledFeatures": ["workspaceFolders"],
+        "disableBuildServer": true,  // ❌ 禁止自动连接 BSP
+        "disableNotifications": true  // ❌ 禁止 Metals 自动提示
+      },
+      "metals.semanticdbVersion": "4.4.39",
+      "args": []
+    }
   },
- "config":{
-  "suggest.noselect": false, // 不自动选中第一个补全项
-  "suggest.enablePreview": true, // 启用补全预览
-  //"suggest.enablePreselect": true, // 禁用预选
-  //"suggest.autoTrigger": "trigger", // 仅在触发字符时显示补全
-  "suggest.detailField": "preview", // 在预览窗口中显示详细信息
-  "suggest.ignoreCase": true
-}, 
-"workspace": {
-    "folders": [
-      "~/ysyx-workbench/nemu",
-      "~/chisel"
-    ]
+  "config": {
+    "suggest.noselect": false,  // ✅ 不自动选中第一个补全项
+    "suggest.enablePreview": true,  // ✅ 启用补全预览
+    "suggest.ignoreCase": true  // ✅ 忽略大小写
+  },
+  "workspace": {
+    "folders": ["~/chisel/src/main/scala"]  // ✅ 仅在 Chisel 目录启用 Metals
   }
-
 }
-   //"verible": {
-            //"command": "/usr/bin/verible-verilog-ls",
-            //"filetypes": ["verilog","v"],
-            //"rootPatterns": [".v",".sv"],
-            //"args": [],
-            //"trace.server": "verbose",
-            //"settings": {
-                //"verilog.enableCompletion": true,
-                //"verilog.enableDiagnostics":true
-            //}
-    //},
-
-    //"diagnostic-languageserver.server":{
-        //"verible" :{
-            //"command":"/usr/bin/verible-verilog-syntax",
-            //"args":["--check",
-                //"--verbosity","2"
-            //],
-            //"format": "json",
-            //"filetypes":["verilog","v"],
-            //"isStdout": true,
-            //"parseJson": true
-        //}
-    //},
-    //"coc.preferences.enableMessage": false,
-    //"coc.preferences.formatOnSaveFiletypes" : ["verilog","sv","v"],
-    //"coc.source.verilog.veriblePath": "/usr/bin/verible-verilog-ls",
-
-    // 设置 Coc.nvim 插件的诊断功能
-    //"coc.preferences.diagnostic.virtualText": true,  // 显示虚拟文本诊断信息（通常在代码行号附近）
-    //"coc.preferences.diagnostic.level": "Warning",  // 设置诊断的最低严重级别，可以是 Error, Warning, Information, Hint
-    //"coc.preferences.diagnostic.displayByAle": true,  // 允许显示来自 Ale（另一个诊断工具）的诊断信息
-
-    // 设置 Coc.nvim 插件的自动完成
-    //"coc.preferences.autoCompleteDelay": 100,  // 自动完成延迟，单位是毫秒
-    //"coc.preferences.snippetSupport": true,  // 启用代码片段支持（比如 Verilog 的常见模块模板）
-
-    //"coc.preferences.floatWindow": true,  // 启用浮动窗口
-    //"coc.preferences.floatWindow.border": "rounded",  // 设置浮动窗口的边框类型，选项有 none, single, double, rounded
-    //"coc.preferences.floatWindow.maxHeight": 10,  // 浮动窗口的最大高度
-
-    // 设置 Coc.nvim 插件的补全行为
-    //"coc.source.buffer.enable": true,  // 启用 buffer（当前文件）来源的补全
-    //"coc.source.file.enable": true,  // 启用文件系统（文件名补全）
-    //"coc.source.git.enable": true,  // 启用 git 提供的补全（如分支、提交信息）
-//}
-
- 
-
-

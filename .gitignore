@@ -1,3 +1,11 @@
 .gitignore
-
+.bsp/
+.metals/
+.scala-build/
+.vim/plugged/
+.vim/plugin/verilog_function/
+.vim/*
+!.vim/plugin
+*.json
+!./.vim/coc-settings.json
 

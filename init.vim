@@ -58,7 +58,6 @@ Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp'] }
 Plug 'chxuan/cpp-mode', { 'for': ['cpp'] }
 Plug 'nvim-lua/popup.nvim'
 Plug 'derekwyatt/vim-scala'
-
 Plug 'vim-airline/vim-airline'
 " 安装 vim-airline 主题插件（可选）
 Plug 'vim-airline/vim-airline-themes'
@@ -68,6 +67,22 @@ Plug 'Exafunction/codeium.vim'
 "主题颜色
 Plug 'morhetz/gruvbox'
 Plug 'Mofiqul/vscode.nvim'
+
+" Deps
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'stevearc/dressing.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'MunifTanjim/nui.nvim'
+Plug 'MeanderingProgrammer/render-markdown.nvim'
+
+" Optional deps
+Plug 'hrsh7th/nvim-cmp'
+Plug 'nvim-tree/nvim-web-devicons' "or Plug 'echasnovski/mini.icons'
+Plug 'HakonHarnes/img-clip.nvim'
+Plug 'zbirenbaum/copilot.lua'
+Plug 'nvim-lua/plenary.nvim'
+
+"Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
 call plug#end()
 
 "fzf配置
@@ -172,8 +187,8 @@ autocmd FileType * inoremap <C-t> :<ESC>term<CR>
 autocmd FileType * map <C-q> <ESC>:cclose<CR>:wq<CR>
 autocmd FileType * inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
 "打开/关闭quickfix端口
-autocmd FileType * nnoremap <C-c> <ESC>:call Window()<CR>
-autocmd FileType * inoremap <C-c> <ESC>:call Window()<CR>
+autocmd FileType * nnoremap <C-c> <ESC>:call Window2()<CR>
+autocmd FileType * inoremap <C-c> <ESC>:call Window2()<CR>
 " 可视模式下按 Ctrl-C 复制到剪贴板
 autocmd FileType * vnoremap <C-c> "+y
 autocmd FileType * nnoremap <C-v> "+p
@@ -205,7 +220,7 @@ autocmd FileType * execute "set <M-p>=\ep"
 autocmd FileType * inoremap <M-p> <ESC>pa
 
 autocmd FileType * execute "set <M-w>=\ew"
-autocmd FileType * inoremap <M-w> <ESC>ebdei
+autocmd FileType * inoremap <M-w> <ESC>ebdei[1;3A[<0;88;19m[1;3A[<0;88;19m[1;3A[<0;88;19m
 autocmd FileType * nnoremap <M-w> <ESC>ebde
 
 imap <A-h> <Left>
@@ -224,3 +239,28 @@ noremap <C-j> <ESC>^$:call Newline()<cr><ESC>
 set termguicolors  " 启用 24 位颜色支持
 "colorscheme gruvbox
 colorscheme vscode
+
+autocmd! User avante.nvim 
+" 运行 init.lua 配置
+lua require('init')
+set runtimepath^=~/.local/share/nvim/lazy/lazy.nvim
+lua require("lazy").setup("plugins")
+"lua << EOF
+"require('avante').setup({
+    "provider = 'openai',  -- 伪装成 OpenAI API
+    "openai = {
+        "api_key = os.getenv("OPENAI_API_KEY"),  -- 从环境变量读取 API Key
+        "endpoint = 'https://api.siliconflow.cn/v1',  -- API 地址
+        "model = 'Qwen/QwQ-32B',
+        "temperature = 0.7,
+        "max_tokens = 512,
+        "stream = false,  -- 关闭流式传输
+        "extra_headers = {  
+            "["x-api-key"] = os.getenv("OPENAI_API_KEY"),  -- 这里用 x-api-key 代替 Authorization;
+"
+            "["Content-Type"] = "application/json"
+        "}
+    "}
+";
+"})
+"EOF

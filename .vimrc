@@ -21,7 +21,8 @@ set winaltkeys=no”
 let g:filename = expand('%')
 filetype plugin indent on
 
-autocmd BufWritePost $MYVIMRC source $MYVIMRC
+"autocmd BufWritePost $MYVIMRC source $MYVIMRC
+
 "智能按键操作
 autocmd FileType * inoremap } <ESC>:call Quotation4()<cr><ESC>
 
@@ -125,6 +126,9 @@ Plug 'vim-airline/vim-airline'
 " 安装 vim-airline 主题插件（可选）
 Plug 'vim-airline/vim-airline-themes'
 Plug 'derekwyatt/vim-scala'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'Exafunction/codeium.vim'
 call plug#end()
 
 autocmd VimEnter *.v : LoadCompletionFile /home/kaifeng/.vim/plugin/verilog_function/verilog.txt
@@ -157,6 +161,16 @@ nnoremap <leader>y :CopyCode<cr>
 nnoremap <leader>p :PasteCode<cr>
 nnoremap <leader>u :GoToFunImpl<cr>
 nnoremap <silent> <leader>a :Switch<cr>
+
+"fzf配置
+"使用 <leader>f 代替 Ctrl-p 来搜索文件
+nnoremap <leader>f :Files<CR>
+"使用 <leader>b 代替 Ctrl-b 来切换缓冲区
+nnoremap <leader>b :Buffers<CR>
+"使用 <leader>g 进行 Git 文件搜索
+nnoremap <leader>g :GFiles<CR>
+"使用 <leader>r 进行 Ripgrep 搜索
+nnoremap <leader>r :Rg<Space>
 
 function! CheckBackspace() abort
     let col = col('.')- 1

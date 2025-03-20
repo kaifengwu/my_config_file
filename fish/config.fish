@@ -9,6 +9,9 @@ set -gx JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 set -gx PATH $JAVA_HOME/bin $PATH
 # <<< coursier install directory <<<
 
+set -Ux DEEPSEEK_API_KEY "sk-rvyxdukkjarhnowpqjhswwzlbadbrjkqqcizqiznylluszpx"
+set -Ux SILICONFLOW_API_KEY "sk-rvyxdukkjarhnowpqjhswwzlbadbrjkqqcizqiznylluszpx"
+
 function smart_ctrl_l
     if test -n (commandline) 
         commandline -f forward-char # 有输入时向右移动光标
@@ -37,4 +40,7 @@ set -gx PATH "$PATH:/home/kaifeng/.cache/scalacli/local-repo/bin/scala-cli"
 # >>> coursier install directory >>>
 set -gx PATH "$PATH:/home/kaifeng/.local/share/coursier/bin"
 set -gx JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
-set -gx PATH $PATH /usr/lib/jvm/java-17-openjdk-amd64/bin /home/kaifeng/.fzf/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/games /usr/local/games /snap/bin /snap/bin /home/kaifeng/.cache/scalacli/local-repo/bin/scala-cli /home/kaifeng/.local/share/coursier/bin /home/kaifeng/.local/bin /home/kaifeng/.local/lib/python3.10/site-packages /opt/riscv-linux/bin /home/kaifeng/qemu/build
+set -gx PATH $PATH /usr/lib/jvm/java-17-openjdk-amd64/bin /home/kaifeng/.fzf/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/games /usr/local/games /snap/bin /snap/bin /home/kaifeng/.cache/scalacli/local-repo/bin/scala-cli /home/kaifeng/.local/share/coursier/bin /home/kaifeng/.local/bin /home/kaifeng/.local/lib/python3.10/site-packages
+set -gx PATH $PATH  /home/kaifeng/riscv-linux/bin  /home/kaifeng/riscv-newlib/bin
+set -gx PATH $PATH  /home/kaifeng/Downloads/bin
+
