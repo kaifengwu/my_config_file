@@ -45,12 +45,19 @@ set formatoptions=c,l,1,p " 格式化选项
 set nowrap              " 不自动换行
 set complete=.,w,b,u,t,i " 补全选项
 highlight Normal ctermbg=NONE guibg=NONE
+set runtimepath+=~/.config/nvim/plugin
 let mapleader =" "
-let g:codeium_no_map_tab = 1 " 让coc-vim插件不冲突
+"let g:codeium_no_map_tab = 1 " 让coc-vim插件不冲突
 "绑定codeium插件的补全建议
 " 绑定 Alt+Enter 触发 Codeium
- imap <script><silent><nowait><expr> <C-p> codeium#Accept()
+"imap <script><silent><nowait><expr> <C-p> codeium#Accept()
+
 " 插件管理（使用 vim-plug）
+set runtimepath+=~/.local/share/nvim/plugged
+set runtimepath+=~/.local/share/nvim/plugged
+lua require('init')
+lua require("lazy").setup("plugins")
+
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'scrooloose/nerdtree'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
@@ -63,26 +70,10 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'Exafunction/codeium.vim'
+"Plug 'Exafunction/codeium.vim'
 "主题颜色
 Plug 'morhetz/gruvbox'
 Plug 'Mofiqul/vscode.nvim'
-
-" Deps
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'stevearc/dressing.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'MunifTanjim/nui.nvim'
-Plug 'MeanderingProgrammer/render-markdown.nvim'
-
-" Optional deps
-Plug 'hrsh7th/nvim-cmp'
-Plug 'nvim-tree/nvim-web-devicons' "or Plug 'echasnovski/mini.icons'
-Plug 'HakonHarnes/img-clip.nvim'
-Plug 'zbirenbaum/copilot.lua'
-Plug 'nvim-lua/plenary.nvim'
-
-"Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
 call plug#end()
 
 "fzf配置
@@ -95,20 +86,24 @@ nnoremap <leader>g :GFiles<CR>
 "使用 <leader>r 进行 Ripgrep 搜索
 nnoremap <leader>r :Rg<Space>
 
-
 " 自动命令
 "autocmd BufWritePost $MYVIMRC source $MYVIMRC
 autocmd FileType * setlocal formatoptions-=cro
+ "让 Neovim 在启动时自动加载 plugin/ 目录下的所有 .vim 文件
+autocmd VimEnter * runtime! plugin/**/*.vim
 
 
 " NERDTree 配置
 map <F2> :NERDTreeMirror<CR>
 map <F3> :NERDTreeToggle<CR>
-map f :NERDTreeFind<CR>
+nnoremap f :NERDTreeFind<CR>
+" 把 f 映射为这个函数
+
 
 " Coc.nvim 配置
 nmap <silent> <leader>d :call CocAction('jumpDeclaration')<CR>
 nmap <silent> <leader>i :call CocAction('jumpDefinition')<CR>
+nmap <silent> gd <Plug>(coc-definition)
 
 " 补全菜单样式
 highlight Pmenu ctermbg=black ctermfg=grey
@@ -184,8 +179,8 @@ autocmd FileType * inoremap <C-s> <ESC>:cexpr[]<CR>:cclose<CR>:w<CR>l
 autocmd FileType * map <C-t> :term<CR>
 autocmd FileType * inoremap <C-t> :<ESC>term<CR>
 "保存并退出
-autocmd FileType * map <C-q> <ESC>:cclose<CR>:wq<CR>
-autocmd FileType * inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q<CR>
+autocmd FileType * map <C-q> <ESC>:cclose<CR>:wq!<CR>
+autocmd FileType * inoremap <C-q> <ESC>:wq<CR>:cexpr[]<CR>:q!<CR>
 "打开/关闭quickfix端口
 autocmd FileType * nnoremap <C-c> <ESC>:call Window2()<CR>
 autocmd FileType * inoremap <C-c> <ESC>:call Window2()<CR>
@@ -239,28 +234,9 @@ noremap <C-j> <ESC>^$:call Newline()<cr><ESC>
 set termguicolors  " 启用 24 位颜色支持
 "colorscheme gruvbox
 colorscheme vscode
-
 autocmd! User avante.nvim 
+autocmd! User copilot
+
 " 运行 init.lua 配置
-lua require('init')
-set runtimepath^=~/.local/share/nvim/lazy/lazy.nvim
-lua require("lazy").setup("plugins")
-"lua << EOF
-"require('avante').setup({
-    "provider = 'openai',  -- 伪装成 OpenAI API
-    "openai = {
-        "api_key = os.getenv("OPENAI_API_KEY"),  -- 从环境变量读取 API Key
-        "endpoint = 'https://api.siliconflow.cn/v1',  -- API 地址
-        "model = 'Qwen/QwQ-32B',
-        "temperature = 0.7,
-        "max_tokens = 512,
-        "stream = false,  -- 关闭流式传输
-        "extra_headers = {  
-            "["x-api-key"] = os.getenv("OPENAI_API_KEY"),  -- 这里用 x-api-key 代替 Authorization;
-"
-            "["Content-Type"] = "application/json"
-        "}
-    "}
-";
-"})
-"EOF
+
+autocmd VimEnter * source ~/gits/dotfiles/.vim/plugin/chisel_function/configuration.vim
